@@ -28,6 +28,8 @@
     "src/main.prod.js",
     "src/renderer.prod.js",
     "src/dist",
-    ".erb/dll"
+    "config/dll",
+    "node_modules",
+    "src/node_modules"
   ]
 }

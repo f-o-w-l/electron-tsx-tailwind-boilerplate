@@ -2,6 +2,11 @@
   "recommendations": [
     "dbaeumer.vscode-eslint",
     "EditorConfig.EditorConfig",
-    "msjsdiag.debugger-for-chrome"
+    "msjsdiag.debugger-for-chrome",
+    "esbenp.prettier-vscode",
+    "csstools.postcss",
+    "bradlc.vscode-tailwindcss",
+    "silvenon.mdx",
+    "xyc.vscode-mdx-preview"
   ]
 }

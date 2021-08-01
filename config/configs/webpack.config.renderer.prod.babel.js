@@ -2,23 +2,26 @@
  * Build config for electron renderer process
  */
 
-import path from 'path';
-import webpack from 'webpack';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import { merge } from 'webpack-merge';
-import TerserPlugin from 'terser-webpack-plugin';
-import baseConfig from './webpack.config.base';
-import CheckNodeEnv from '../scripts/CheckNodeEnv';
-import DeleteSourceMaps from '../scripts/DeleteSourceMaps';
+import path from 'path'
+import webpack from 'webpack'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
+import { merge } from 'webpack-merge'
+import TerserPlugin from 'terser-webpack-plugin'
+import baseConfig from './webpack.config.base'
+import CheckNodeEnv from '../scripts/CheckNodeEnv'
+import DeleteSourceMaps from '../scripts/DeleteSourceMaps'
 
-CheckNodeEnv('production');
-DeleteSourceMaps();
+CheckNodeEnv('production')
+DeleteSourceMaps()
 
-const devtoolsConfig = process.env.DEBUG_PROD === 'true' ? {
-  devtool: 'source-map'
-} : {};
+const devtoolsConfig =
+  process.env.DEBUG_PROD === 'true'
+    ? {
+        devtool: 'source-map',
+      }
+    : {}
 
 export default merge(baseConfig, {
   ...devtoolsConfig,
@@ -52,7 +55,15 @@ export default merge(baseConfig, {
             },
           },
           'css-loader',
-          'sass-loader'
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [require('tailwindcss'), require('autoprefixer')],
+              },
+            },
+          },
+          'sass-loader',
         ],
       },
       // WOFF Font
@@ -120,18 +131,29 @@ export default merge(baseConfig, {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
         use: 'url-loader',
       },
+      // Other assets
+      {
+        loader: require.resolve('file-loader'),
+        exclude: [
+          /\.(js|mjs|cjs|jsx|ts|tsx|global.css|css|ttf)$/,
+          /\.html$/,
+          /\.json$/,
+        ],
+        options: {
+          name: 'static/media/[name].[hash:8].[ext]',
+        },
+      },
     ],
   },
 
   optimization: {
     minimize: true,
-    minimizer:
-      [
-        new TerserPlugin({
-          parallel: true,
-        }),
-        new CssMinimizerPlugin(),
-      ],
+    minimizer: [
+      new TerserPlugin({
+        parallel: true,
+      }),
+      new CssMinimizerPlugin(),
+    ],
   },
 
   plugins: [
@@ -159,4 +181,4 @@ export default merge(baseConfig, {
       openAnalyzer: process.env.OPEN_ANALYZER === 'true',
     }),
   ],
-});
+})

@@ -1,37 +1,40 @@
-import path from 'path';
-import fs from 'fs';
-import webpack from 'webpack';
-import chalk from 'chalk';
-import { merge } from 'webpack-merge';
-import { spawn, execSync } from 'child_process';
-import baseConfig from './webpack.config.base';
-import CheckNodeEnv from '../scripts/CheckNodeEnv';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import path from 'path'
+import fs from 'fs'
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin'
+import webpack from 'webpack'
+import chalk from 'chalk'
+import { merge } from 'webpack-merge'
+import { spawn, execSync } from 'child_process'
+import baseConfig from './webpack.config.base'
+import CheckNodeEnv from '../scripts/CheckNodeEnv'
 
 // When an ESLint server is running, we can't set the NODE_ENV so we'll check if it's
 // at the dev webpack config is not accidentally run in a production environment
 if (process.env.NODE_ENV === 'production') {
-  CheckNodeEnv('development');
+  CheckNodeEnv('development')
 }
 
-const port = process.env.PORT || 1212;
-const publicPath = `http://localhost:${port}/dist`;
-const dllDir = path.join(__dirname, '../dll');
-const manifest = path.resolve(dllDir, 'renderer.json');
+const port = process.env.PORT || 1212
+const publicPath = `http://localhost:${port}/dist`
+const dllDir = path.join(__dirname, '../dll')
+const manifest = path.resolve(dllDir, 'renderer.json')
 const requiredByDLLConfig = module.parent.filename.includes(
   'webpack.config.renderer.dev.dll'
-);
+)
 
 /**
  * Warn if the DLL is not built
  */
-if (!requiredByDLLConfig && !(fs.existsSync(dllDir) && fs.existsSync(manifest))) {
+if (
+  !requiredByDLLConfig &&
+  !(fs.existsSync(dllDir) && fs.existsSync(manifest))
+) {
   console.log(
     chalk.black.bgYellow.bold(
       'The DLL files are missing. Sit back while we build them for you with "yarn build-dll"'
     )
-  );
-  execSync('yarn postinstall');
+  )
+  execSync('yarn postinstall')
 }
 
 export default merge(baseConfig, {
@@ -61,9 +64,7 @@ export default merge(baseConfig, {
           {
             loader: require.resolve('babel-loader'),
             options: {
-              plugins: [
-                require.resolve('react-refresh/babel'),
-              ].filter(Boolean),
+              plugins: [require.resolve('react-refresh/babel')].filter(Boolean),
             },
           },
         ],
@@ -78,6 +79,14 @@ export default merge(baseConfig, {
             loader: 'css-loader',
             options: {
               sourceMap: true,
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [require('tailwindcss'), require('autoprefixer')],
+              },
             },
           },
         ],
@@ -96,6 +105,14 @@ export default merge(baseConfig, {
               },
               sourceMap: true,
               importLoaders: 1,
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [require('tailwindcss'), require('autoprefixer')],
+              },
             },
           },
         ],
@@ -208,10 +225,21 @@ export default merge(baseConfig, {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
         use: 'url-loader',
       },
+      // Other assets
+      {
+        loader: require.resolve('file-loader'),
+        exclude: [
+          /\.(js|mjs|cjs|jsx|ts|tsx|global.css|css|ttf)$/,
+          /\.html$/,
+          /\.json$/,
+        ],
+        options: {
+          name: 'static/media/[name].[hash:8].[ext]',
+        },
+      },
     ],
   },
   plugins: [
-
     requiredByDLLConfig
       ? null
       : new webpack.DllReferencePlugin({
@@ -271,14 +299,14 @@ export default merge(baseConfig, {
       disableDotRule: false,
     },
     before() {
-      console.log('Starting Main Process...');
-        spawn('npm', ['run', 'start:main'], {
-          shell: true,
-          env: process.env,
-          stdio: 'inherit',
-        })
-          .on('close', (code) => process.exit(code))
-          .on('error', (spawnError) => console.error(spawnError));
+      console.log('Starting Main Process...')
+      spawn('npm', ['run', 'start:main'], {
+        shell: true,
+        env: process.env,
+        stdio: 'inherit',
+      })
+        .on('close', (code) => process.exit(code))
+        .on('error', (spawnError) => console.error(spawnError))
     },
   },
-});
+})
