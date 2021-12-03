@@ -7,7 +7,6 @@ import DefaultTheme from '../constants/DefaultTheme'
 import { ThemeState, Theme } from './theme.d'
 
 const themeDefault = {
-  // colors: { ...DefaultTheme },
   colors: { ...DefaultTheme },
   themeName: Theme.Default,
 }
