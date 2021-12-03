@@ -10,7 +10,7 @@ import ThemeSwitch from './atoms/ThemeSwitch'
 const ExampleChildComponent = () => {
   const colors = useTheme((state) => state.colors)
 
-  const [count, setCount] = useState<number>(5)
+  const [count, setCount] = useState(5)
 
   const buttonStyle = `mx-2 ${colors.text}`
 
