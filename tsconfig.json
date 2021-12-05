@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2018",
-    "module": "CommonJS",
+    "module": "commonjs",
     "lib": ["dom", "esnext"],
     "declaration": true,
     "declarationMap": true,
@@ -20,13 +20,14 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "allowJs": true
   },
   "exclude": [
-    "test",
-    "release",
     "src/main.prod.js",
     "src/renderer.prod.js",
+    "test",
+    "release",
     "src/dist",
     "config/dll",
     "node_modules",
